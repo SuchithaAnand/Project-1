@@ -1,0 +1,80 @@
+''' Data Path '''
+train_path = '/content/drive/MyDrive/Kidney'
+
+
+File=[]
+for f in os.listdir(train_path):
+    File += [f]
+
+'''  total number of classes '''
+print(File)
+
+
+''' reading equal images for both GBM and LGG
+    ie., 300 images for GBM and 300 images for LGG
+
+ '''
+
+train_data = []
+n_of_images=300
+
+''' label encoding '''
+mapping={'GBM':0, 'LGG':1}
+
+count=0
+
+for f in os.listdir(train_path):
+    ''' joining path '''
+    t=0
+    path = os.path.join(train_path, f)
+    for im in os.listdir(path):
+        ''' loading an image '''
+        img = load_img(os.path.join(path, im), grayscale=False, color_mode='rgb', target_size=(150,150))
+        ''' converting an image to array '''
+        img = img_to_array(img)
+        ''' scaling  '''
+        img = img / 255.0
+        ''' appending image to train_data '''
+        train_data.append([img, count])
+        t+=1
+        if t==n_of_images:
+          break
+    count=count+1
+
+
+''' converting labels into to_categorical '''
+train_labels = to_categorical(train_labels)
+
+''' coverting train_images into numpy array '''
+train_images = np.array(train_images)
+
+''' converting train_labesl into numpy array '''
+train_labels = np.array(train_labels)
+
+
+''' shaep of train_images and train_labels '''
+print(train_images.shape)
+print(train_labels.shape)
+
+
+''' reshaping images '''
+train_images = train_images.reshape(-1,150,150,3)
+
+
+
+''' train test split '''
+X_train, X_test, y_train, y_test = train_test_split(train_images,train_labels, test_size=0.5,random_state=44)
+
+
+''' shape of X_train, X_test, y_train, y_test '''
+print(X_train.shape)
+print(X_test.shape)
+print(y_train.shape)
+print(y_test.shape)
+
+
+''' data Augmentation '''
+data_aug = ImageDataGenerator(horizontal_flip=True, vertical_flip=True, rotation_range=20, zoom_range=0.2,
+                    width_shift_range=0.2, height_shift_range=0.2, shear_range=0.1, fill_mode="nearest")
+
+
